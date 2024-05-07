@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-history">
+            <!-- Chat history will be displayed here -->
+        </div>
+        <div id="user-input">
+            <input type="text" id="user-input-text">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById('user-input-text').value;
+            document.getElementById('user-input-text').value = '';
+            // Send user input to server and receive bot response
+            fetch('/chatbot/response/', {
+                method: 'POST',
+                body: JSON.stringify({ user_input: userInput }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Append bot response to chat history
+                document.getElementById('chat-history').innerHTML += '<p><strong>User:</strong> ' + userInput + '</p>';
+                document.getElementById('chat-history').innerHTML += '<p><strong>Bot:</strong> ' + data.response + '</p>';
+            });
+        }
+    </script>
+</body>
+</html>
